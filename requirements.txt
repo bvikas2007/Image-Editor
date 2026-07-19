@@ -1,0 +1,6 @@
+gradio
+pillow
+numpy
+rembg
+onnxruntime
+openai
