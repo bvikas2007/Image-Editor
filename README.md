@@ -46,6 +46,7 @@ Go to console.groq.com, sign up for free, and create an API key. This is what po
 **On Mac or Linux**, in your terminal:
 ```
 export GROQ_API_KEY="your-key-here"
+use the api key
 ```
 
 **On Windows (Command Prompt)**:
@@ -63,7 +64,7 @@ Do this every time you open a new terminal, or look up how to set a permanent en
 ### 6. Run the app
 
 ```
-python app.py
+python app.py 
 ```
 
 A link like `http://127.0.0.1:7860` will appear in the terminal. Open it in your browser.
