@@ -49,7 +49,7 @@ Output: {"op": "tone", "region": "full", "params": {"warmth": -0.3}}
 
 
 def get_client():
-    api_key = os.environ.get("GROQ_API_KEY")
+    api_key = os.environ.get("AQ.Ab8RN6LlghdYum6LsseJ8Bv298JsxSat8b76Qe6EkrzEjfr3fw")
     if not api_key:
         raise ValueError(
             "GROQ_API_KEY environment variable is not set. "
