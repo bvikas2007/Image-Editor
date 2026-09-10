@@ -1,7 +1,9 @@
 import os
 import json
 from openai import OpenAI
+from dotenv import load_dotenv
 
+load_dotenv()
 # This is the "brain" of the app. It turns a plain English instruction like
 # "warm up the colours" into a structured JSON object the editor code can use.
 # We use Groq because it gives you a free API key with a generous free tier,
@@ -50,12 +52,16 @@ Output: {"op": "tone", "region": "full", "params": {"warmth": -0.3}}
 
 def get_client():
     api_key = os.environ.get("GROQ_API_KEY")
+
     if not api_key:
         raise ValueError(
-            "GROQ_API_KEY environment variable is not set. "
-            "Get a free key at console.groq.com and set it before running the app."
+            "GROQ_API_KEY environment variable is not set."
         )
-    return OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
+
+    return OpenAI(
+        api_key=api_key,
+        base_url="https://api.groq.com/openai/v1"
+    )
 
 
 def parse_instruction(instruction: str, history=None) -> dict:
@@ -76,7 +82,7 @@ def parse_instruction(instruction: str, history=None) -> dict:
     messages.append({"role": "user", "content": instruction})
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=messages,
         temperature=0,
         max_tokens=200,
