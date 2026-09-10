@@ -163,6 +163,5 @@ with gr.Blocks(title="AI Image Editor") as demo:
         inputs=[branch_dropdown, tree_state],
         outputs=[current_image, tree_view],
     )
-
 if __name__ == "__main__":
-    demo.launch()
+    demo.queue().launch()
