@@ -54,24 +54,52 @@ def apply_tone_edit(image: Image.Image, params: dict, region: str = "full") -> I
 
     return result
 
-
 def remove_background(image: Image.Image) -> Image.Image:
-    """Removes the background using the rembg model (U^2-Net under the hood)."""
-    # rembg needs onnxruntime to actually run the model. If it's missing,
-    # rembg's own import code calls sys.exit(1) instead of raising a normal
-    # error, which would crash the whole app instead of showing a message
-    # in the chat. So we check for it ourselves first and fail politely.
+    """Fast background removal using a reused rembg model."""
+
     try:
         import onnxruntime  # noqa: F401
     except ImportError:
         raise RuntimeError(
-            "Background removal needs the 'onnxruntime' package, which is not installed. "
-            "Run this in your terminal, then restart the app: pip install onnxruntime"
+            "Background removal needs 'onnxruntime'. "
+            "Run: pip install onnxruntime"
         )
 
-    from rembg import remove
-    return remove(image.convert("RGB"))
+    from rembg import remove, new_session
 
+    # Load the model only once
+    if not hasattr(remove_background, "_session"):
+        remove_background._session = new_session("u2net")
+
+    session = remove_background._session
+
+    image = image.convert("RGB")
+    original_size = image.size
+
+    # Resize large images to make inference much faster
+    MAX_SIZE = 1200
+
+    if max(image.size) > MAX_SIZE:
+        scale = MAX_SIZE / max(image.size)
+
+        new_size = (
+            int(image.width * scale),
+            int(image.height * scale)
+        )
+
+        image = image.resize(new_size, Image.Resampling.LANCZOS)
+
+    # Actual AI background removal
+    result = remove(image, session=session)
+
+    # Restore original dimensions
+    if result.size != original_size:
+        result = result.resize(
+            original_size,
+            Image.Resampling.LANCZOS
+        )
+
+    return result
 
 def build_explanation(op: str, region: str, params: dict) -> str:
     """Turns the applied operation into a short human readable sentence,
